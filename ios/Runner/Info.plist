@@ -48,6 +48,9 @@
 	<!-- Biometria - Face ID -->
 	<key>NSFaceIDUsageDescription</key>
 	<string>Usamos Face ID para login seguro no aplicativo.</string>
+	<!-- Biometria - Touch ID (iPhones antigos) -->
+	<key>NSTouchIDUsageDescription</key>
+	<string>Usamos Touch ID para login seguro no aplicativo.</string>
 	<!-- URL Schemes para url_launcher -->
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
