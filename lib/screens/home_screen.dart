@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/paciente_provider.dart';
+import '../providers/agendamento_provider.dart';
+import '../providers/relatorio_provider.dart';
 import '../utils/app_theme.dart';
 import '../services/version_service.dart';
 import 'dashboard_screen.dart';
@@ -18,8 +21,47 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => HomeScreenState();
 }
 
-class HomeScreenState extends State<HomeScreen> {
+class HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    // Carregar dados iniciais
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _recarregarTodosDados();
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    // Quando o app volta ao primeiro plano, recarregar os dados
+    if (state == AppLifecycleState.resumed) {
+      _recarregarTodosDados();
+    }
+  }
+
+  Future<void> _recarregarTodosDados() async {
+    if (!mounted) return;
+
+    final pacienteProvider = context.read<PacienteProvider>();
+    final agendamentoProvider = context.read<AgendamentoProvider>();
+    final relatorioProvider = context.read<RelatorioProvider>();
+
+    await Future.wait([
+      pacienteProvider.carregarPacientes(),
+      agendamentoProvider.carregarAgendamentos(),
+      relatorioProvider.carregarRelatorios(),
+    ]);
+  }
 
   void changeTab(int index) {
     setState(() {

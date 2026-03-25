@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -6,6 +7,7 @@ import 'providers/auth_provider.dart';
 import 'providers/paciente_provider.dart';
 import 'providers/agendamento_provider.dart';
 import 'providers/relatorio_provider.dart';
+import 'providers/horario_provider.dart';
 import 'utils/app_theme.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
@@ -27,6 +29,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => PacienteProvider()),
         ChangeNotifierProvider(create: (_) => AgendamentoProvider()),
         ChangeNotifierProvider(create: (_) => RelatorioProvider()),
+        ChangeNotifierProvider(create: (_) => HorarioProvider()),
       ],
       child: MaterialApp(
         title: 'Carminati',
@@ -34,6 +37,16 @@ class MyApp extends StatelessWidget {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.system,
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('pt', 'BR'),
+          Locale('en', 'US'),
+        ],
+        locale: const Locale('pt', 'BR'),
         home: const SplashScreen(),
       ),
     );

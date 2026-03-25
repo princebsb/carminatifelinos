@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../providers/agendamento_provider.dart';
 import '../models/agendamento.dart';
 import '../utils/app_theme.dart';
+import 'horarios_screen.dart';
 
 class AgendamentosScreen extends StatefulWidget {
   const AgendamentosScreen({super.key});
@@ -44,7 +45,7 @@ class _AgendamentosScreenState extends State<AgendamentosScreen>
               unselectedLabelColor: Colors.white70,
               indicatorColor: AppTheme.secondaryColor,
               tabs: const [
-                Tab(text: 'Próximos'),
+                Tab(text: 'Proximos'),
                 Tab(text: 'Todos'),
               ],
             ),
@@ -89,6 +90,17 @@ class _AgendamentosScreenState extends State<AgendamentosScreen>
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const HorariosScreen()),
+          );
+        },
+        backgroundColor: AppTheme.primaryColor,
+        icon: const Icon(Icons.schedule),
+        label: const Text('Ver Horarios'),
       ),
     );
   }
