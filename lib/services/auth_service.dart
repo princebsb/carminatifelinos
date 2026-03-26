@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../models/cliente.dart';
 import '../utils/constants.dart';
@@ -5,7 +6,11 @@ import 'api_service.dart';
 
 class AuthService {
   final ApiService _api = ApiService();
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final FlutterSecureStorage _storage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+    ),
+  );
 
   Future<Map<String, dynamic>> login(String email, String senha) async {
     final result = await _api.post(AppConstants.apiLogin, {
@@ -58,16 +63,26 @@ class AuthService {
   }
 
   Future<bool> isLoggedIn() async {
-    final token = await _storage.read(key: AppConstants.tokenKey);
-    return token != null && token.isNotEmpty;
+    try {
+      final token = await _storage.read(key: AppConstants.tokenKey);
+      return token != null && token.isNotEmpty;
+    } catch (e) {
+      debugPrint('Erro ao verificar login: $e');
+      return false;
+    }
   }
 
   Future<Map<String, String?>> getClienteData() async {
-    return {
-      'id': await _storage.read(key: AppConstants.clienteIdKey),
-      'nome': await _storage.read(key: AppConstants.clienteNomeKey),
-      'email': await _storage.read(key: AppConstants.clienteEmailKey),
-    };
+    try {
+      return {
+        'id': await _storage.read(key: AppConstants.clienteIdKey),
+        'nome': await _storage.read(key: AppConstants.clienteNomeKey),
+        'email': await _storage.read(key: AppConstants.clienteEmailKey),
+      };
+    } catch (e) {
+      debugPrint('Erro ao obter dados do cliente: $e');
+      return {'id': null, 'nome': null, 'email': null};
+    }
   }
 
   Future<Map<String, dynamic>> alterarSenha(

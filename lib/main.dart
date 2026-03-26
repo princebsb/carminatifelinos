@@ -68,20 +68,36 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkAuth() async {
-    final authProvider = context.read<AuthProvider>();
-    await authProvider.init();
+    try {
+      final authProvider = context.read<AuthProvider>();
 
-    if (!mounted) return;
-
-    await Future.delayed(const Duration(seconds: 2));
-
-    if (!mounted) return;
-
-    if (authProvider.isLoggedIn) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+      // Timeout de 10 segundos para inicializacao
+      await authProvider.init().timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          debugPrint('Timeout na inicializacao do AuthProvider');
+        },
       );
-    } else {
+
+      if (!mounted) return;
+
+      await Future.delayed(const Duration(seconds: 2));
+
+      if (!mounted) return;
+
+      if (authProvider.isLoggedIn) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      } else {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+        );
+      }
+    } catch (e) {
+      debugPrint('Erro no _checkAuth: $e');
+      if (!mounted) return;
+      // Em caso de erro, vai para login
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => const LoginScreen()),
       );

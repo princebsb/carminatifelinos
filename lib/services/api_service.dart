@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../utils/constants.dart';
@@ -8,11 +9,20 @@ class ApiService {
   factory ApiService() => _instance;
   ApiService._internal();
 
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final FlutterSecureStorage _storage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+    ),
+  );
   String? _token;
 
   Future<void> init() async {
-    _token = await _storage.read(key: AppConstants.tokenKey);
+    try {
+      _token = await _storage.read(key: AppConstants.tokenKey);
+    } catch (e) {
+      debugPrint('Erro ao ler token: $e');
+      _token = null;
+    }
   }
 
   Future<void> setToken(String token) async {

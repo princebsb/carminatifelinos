@@ -10,7 +10,11 @@ class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
   final ApiService _apiService = ApiService();
   final LocalAuthentication _localAuth = LocalAuthentication();
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+    ),
+  );
 
   static const String _emailKey = 'biometric_email';
   static const String _senhaKey = 'biometric_senha';
@@ -33,22 +37,44 @@ class AuthProvider extends ChangeNotifier {
   bool get biometricEnabled => _biometricEnabled;
 
   Future<void> init() async {
-    await _apiService.init();
-    await _checkBiometricAvailability();
-    await _checkBiometricEnabled();
-
-    _isLoggedIn = await _authService.isLoggedIn();
-    if (_isLoggedIn) {
-      final clienteData = await _authService.getClienteData();
-      if (clienteData['id'] != null) {
-        _cliente = Cliente(
-          id: int.parse(clienteData['id']!),
-          codigo: '',
-          nome: clienteData['nome'] ?? '',
-          email: clienteData['email'] ?? '',
-        );
-      }
+    try {
+      await _apiService.init();
+    } catch (e) {
+      debugPrint('Erro ao inicializar ApiService: $e');
     }
+
+    try {
+      await _checkBiometricAvailability();
+    } catch (e) {
+      debugPrint('Erro ao verificar biometria: $e');
+      _canUseBiometrics = false;
+    }
+
+    try {
+      await _checkBiometricEnabled();
+    } catch (e) {
+      debugPrint('Erro ao verificar biometria habilitada: $e');
+      _biometricEnabled = false;
+    }
+
+    try {
+      _isLoggedIn = await _authService.isLoggedIn();
+      if (_isLoggedIn) {
+        final clienteData = await _authService.getClienteData();
+        if (clienteData['id'] != null) {
+          _cliente = Cliente(
+            id: int.parse(clienteData['id']!),
+            codigo: '',
+            nome: clienteData['nome'] ?? '',
+            email: clienteData['email'] ?? '',
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('Erro ao verificar login: $e');
+      _isLoggedIn = false;
+    }
+
     notifyListeners();
   }
 
@@ -63,8 +89,13 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> _checkBiometricEnabled() async {
-    final enabled = await _secureStorage.read(key: _biometricEnabledKey);
-    _biometricEnabled = enabled == 'true';
+    try {
+      final enabled = await _secureStorage.read(key: _biometricEnabledKey);
+      _biometricEnabled = enabled == 'true';
+    } catch (e) {
+      debugPrint('Erro ao ler secure storage: $e');
+      _biometricEnabled = false;
+    }
   }
 
   Future<bool> hasSavedCredentials() async {
