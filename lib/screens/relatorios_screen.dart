@@ -221,7 +221,11 @@ class _RelatorioCard extends StatelessWidget {
   }
 
   void _baixarPdf(BuildContext context) async {
-    const storage = FlutterSecureStorage();
+    const storage = FlutterSecureStorage(
+      aOptions: AndroidOptions(
+        encryptedSharedPreferences: true,
+      ),
+    );
     final token = await storage.read(key: AppConstants.tokenKey);
 
     final url = '${AppConstants.baseUrl}${AppConstants.apiRelatorios}/download/${relatorio.id}';

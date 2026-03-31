@@ -2,7 +2,7 @@ name: carminati_felinos
 description: "App do Portal do Cliente - Carminati"
 publish_to: 'none'
 
-version: 1.0.5+28
+version: 1.0.5+29
 
 environment:
   sdk: ^3.10.1
