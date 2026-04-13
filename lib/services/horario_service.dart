@@ -81,4 +81,30 @@ class HorarioService {
       'whatsapp': '',
     };
   }
+
+  /// Registra o clique em um horario disponivel
+  /// Este metodo nao deve bloquear a abertura do WhatsApp
+  Future<bool> registrarClique({
+    required String horario,
+    required String data,
+    int? pacienteId,
+    int? veterinarioId,
+  }) async {
+    try {
+      final response = await _api.post(
+        AppConstants.apiRegistrarCliqueHorario,
+        {
+          'horario': horario,
+          'data': data,
+          'paciente_id': pacienteId,
+          'veterinario_id': veterinarioId,
+        },
+      );
+
+      return response['success'] == true;
+    } catch (e) {
+      // Silenciosamente ignora erros - o clique no WhatsApp nao deve ser bloqueado
+      return false;
+    }
+  }
 }

@@ -7,6 +7,7 @@ import '../providers/auth_provider.dart';
 import '../models/profissional.dart';
 import '../models/horario_slot.dart';
 import '../utils/app_theme.dart';
+import '../services/horario_service.dart';
 
 class HorariosScreen extends StatefulWidget {
   const HorariosScreen({super.key});
@@ -612,6 +613,15 @@ class _HorariosScreenState extends State<HorariosScreen> {
     final prof = provider.profissionalSelecionado;
     final paciente = provider.pacienteSelecionado;
     final data = DateFormat('dd/MM/yyyy').format(provider.dataSelecionada);
+    final dataApi = DateFormat('yyyy-MM-dd').format(provider.dataSelecionada);
+
+    // Registrar clique de forma assincrona (nao bloqueia a abertura do WhatsApp)
+    HorarioService().registrarClique(
+      horario: horario,
+      data: dataApi,
+      pacienteId: paciente?.id,
+      veterinarioId: prof?.id,
+    );
 
     String mensagem = 'Ola! Meu nome e ${authProvider.clienteNome}';
 

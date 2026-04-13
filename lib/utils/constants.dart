@@ -13,6 +13,7 @@ class AppConstants {
   static const String apiRelatorios = '/api/portal/relatorios';
   static const String apiHorarios = '/api/portal/horarios';
   static const String apiHorariosProfissionais = '/api/portal/horarios/profissionais';
+  static const String apiRegistrarCliqueHorario = '/api/portal/agendamentos/registrar-clique';
 
   // Cores do tema
   static const int primaryColorValue = 0xFF8C1414; // Vermelho escuro
