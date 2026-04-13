@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../providers/auth_provider.dart';
@@ -9,6 +7,7 @@ import '../providers/agendamento_provider.dart';
 import '../utils/app_theme.dart';
 import 'paciente_detalhe_screen.dart';
 import 'home_screen.dart';
+import 'horarios_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -205,48 +204,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             const SizedBox(height: 24),
 
-            // WhatsApp - Precisa de atendimento?
-            _buildWhatsAppCard(),
+            // Ver Horarios de Consulta
+            _buildHorariosCard(),
           ],
         ),
       ),
     );
   }
 
-  void _abrirWhatsApp() async {
-    final authProvider = context.read<AuthProvider>();
-    final pacienteProvider = context.read<PacienteProvider>();
-    
-    final nomeCliente = authProvider.clienteNome;
-    final nomesPacientes = pacienteProvider.pacientes
-        .map((p) => p.nome)
-        .join(', ');
-    
-    final mensagem = Uri.encodeComponent(
-      'Olá! Meu nome é $nomeCliente, tutor(a) do(a) $nomesPacientes. Gostaria de agendar uma consulta.'
-    );
-    
-    final url = Uri.parse('https://wa.me/5561998809569?text=$mensagem');
-    
-    try {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
-    } catch (e) {
-      debugPrint('Erro ao abrir WhatsApp: $e');
-    }
-  }
-
-  Widget _buildWhatsAppCard() {
+  Widget _buildHorariosCard() {
     return Card(
-      color: const Color(0xFF25D366),
+      color: AppTheme.primaryColor,
       child: InkWell(
-        onTap: _abrirWhatsApp,
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const HorariosScreen()),
+          );
+        },
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              const FaIcon(
-                FontAwesomeIcons.whatsapp,
+              const Icon(
+                Icons.calendar_month,
                 color: Colors.white,
                 size: 40,
               ),
@@ -256,7 +238,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Precisa de atendimento?',
+                      'Ver Horarios de Consulta',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -264,7 +246,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Entre em contato conosco pelo WhatsApp para agendar uma consulta.',
+                      'Consulte a disponibilidade e agende uma consulta.',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: Colors.white,
                           ),
